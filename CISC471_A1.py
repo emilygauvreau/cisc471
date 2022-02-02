@@ -4,12 +4,13 @@ Written by Emily Gauvreau
 20074874
 
 I have included a comment for each function for it's purpose and have only included comments
-for lines like list comprehension where their function might not be immediately seen
+for lines like list comprehension where their function might not be immediately understood
 
 Additionally, I have made the assumption that the sequences will be provided in uppercase 
 letters as per the examples in the assignment description. As well that all sequence letters will be one of ACGT
 """
 import itertools
+import matplotlib.pyplot as plt
 
 nucleotides = "ACGT"
 
@@ -27,61 +28,65 @@ def calculateGC(DNAsequence):
 # Question 2: Return the reverse compliment of a strand of DNA
 def reverseCompliment(DNAsequence):
     # Switched the letters to they corresponding pair (A&T, G&C)
+    compliNuc = {
+        "G": "C",
+        "C": "G",
+        "A": "T",
+        "T": "A"
+    }
     compliment = ""
     for i in DNAsequence:
-        if i == "G":
-            compliment += "C"
-        elif i == "C":
-            compliment += "G"
-        elif i == "A":
-            compliment += "T"
-        else:
-            compliment += "A"
-        
+        compliment += compliNuc[i]
+    
     # Use string splicing to reverse the string starting at the back
     compliment = compliment[::-1]
 
     return compliment
 
-# def rnaToProtein(DNAsequence):
+# Question 3: Translates DNA to RNA to Protein returns the amino acid string
+# Does not start transcription until it hits AUG and does not read after the first stop codon
+# This is based on the confirmation of the prof that there will always be one of each in the sequence
+def rnaToProtein(DNAsequence):
     
-#     codons = {
-#         "UUC": "F", "UUC": "F", "UUA": "L", "UUG": "L",
-#         "CUU": "L", "CUC": "L", "CUA": "L", "CUG": "L",
-#         "AUU": "I", "AUC": "I", "AUA": "I", "AUG": "M",
-#         "GUU": "V", "GUC": "V", "GUA": "V", "GUG": "V",
-#         "UCU": "S", "UCC": "S", "UCA": "S", "UCG": "S",
-#         "CCU": "P", "CCC": "P", "CCA": "P", "CCG": "P",
-#         "ACU": "T", "ACC": "T", "ACA": "T", "ACG": "T",
-#         "GCU": "A", "GCC": "A", "GCA": "A", "GCG": "A",
-#         "UAU": "Y", "UAC": "Y", "CAU": "H", "CAC": "H",
-#         "AAU": "N", "AAC": "N", "GAU": "D", "GAC": "D",
-#         "CAA": "Q", "CAG": "Q", "AAA": "K", "AAG": "K",
-#         "GAA": "E", "GAG": "E", "UGU": "C", "UGC": "C",
-#         "CGU": "R", "CGC": "R", "CGA": "R", "CGG": "R",
-#         "AGU": "S", "AGC": "S", "AGA": "R", "AGG": "R",
-#         "GGU": "G", "GCG": "G", "GGA": "G", "GGG": "G",
-#         "UGG": "W", "UAA": "Stop", "UAG": "Stop", "UGA": "Stop",
-#     }
-    
-#     if len(DNAsequence) % 3 == 0:
-#         rnaStrand = ""
-#         for i in DNAsequence:
-#             if i == "G":
-#                 rnaStrand += "C"
-#             elif i == "C":
-#                 rnaStrand += "G"
-#             elif i == "A":
-#                 rnaStrand += "U"
-#             else:
-#                 rnaStrand += "A"
+    codons = {
+        "UUC": "F", "UUC": "F", "UUA": "L", "UUG": "L",
+        "CUU": "L", "CUC": "L", "CUA": "L", "CUG": "L",
+        "AUU": "I", "AUC": "I", "AUA": "I", "AUG": "M",
+        "GUU": "V", "GUC": "V", "GUA": "V", "GUG": "V",
+        "UCU": "S", "UCC": "S", "UCA": "S", "UCG": "S",
+        "CCU": "P", "CCC": "P", "CCA": "P", "CCG": "P",
+        "ACU": "T", "ACC": "T", "ACA": "T", "ACG": "T",
+        "GCU": "A", "GCC": "A", "GCA": "A", "GCG": "A",
+        "UAU": "Y", "UAC": "Y", "CAU": "H", "CAC": "H",
+        "AAU": "N", "AAC": "N", "GAU": "D", "GAC": "D",
+        "CAA": "Q", "CAG": "Q", "AAA": "K", "AAG": "K",
+        "GAA": "E", "GAG": "E", "UGU": "C", "UGC": "C",
+        "CGU": "R", "CGC": "R", "CGA": "R", "CGG": "R",
+        "AGU": "S", "AGC": "S", "AGA": "R", "AGG": "R",
+        "GGU": "G", "GCG": "G", "GGA": "G", "GGG": "G",
+        "UGG": "W", "UAA": "Stop", "UAG": "Stop", "UGA": "Stop",
+    }
 
-#         protein = ""
-#         for i in range(0, len(rnaStrand), 3):
-#             singleCodon = rnaStrand[i:i + 3]
-#             protein += codons[singleCodon]
-        
-#         return (rnaStrand, protein)
+    compliNuc = {
+        "G": "C",
+        "C": "G",
+        "A": "U",
+        "T": "A"
+    }
+    rnaStrand = ""
+    for i in DNAsequence:
+        rnaStrand += compliNuc[i]
+
+    protein = ""
+    start = rnaStrand.find("AUG")
+    for i in range(start, len(rnaStrand)-2, 3):
+        singleCodon = rnaStrand[i:i + 3]
+        if codons[singleCodon] == "stop":
+            break
+        else:
+            protein += codons[singleCodon]
+    
+    return (rnaStrand, protein)
     
 
 # Question 4: Returns the Hamming Distance (# of mismatches) between two sequences
@@ -183,9 +188,54 @@ def clumps(genome, k, L, t):
     
     return set(uniqueKmers)
 
-# Question 10:
+# Question 10: Returns the k-mer and index for any common strings within the sequences.
+# Assumes that the two sequences must be the same length to be compared as the question does not specify
 def sharedPairs(k, sequence1, sequence2):
-    pass
+
+    kmers = generateAllKmers(k)
+    matches = {}
+    for i in kmers:
+        reverse = reverseCompliment(i)
+        if i in sequence1:
+            if i in sequence2:
+                matches[i] = (sequence1.index(i), sequence2.index(i))
+            elif reverse in sequence2:
+                matches[i + ', ' + reverse] = (sequence1.index(i), sequence2.index(reverse))
+        if i in sequence2:
+            if reverse in sequence1:
+                matches[reverse + ', ' + i] = (sequence1.index(reverse), sequence2.index(i))
+        
+    return matches
+    
+
+# Question 11: Returns the skew array, the index that the skew is at minimum and plots the skew diagram
+def skew(DNAsequence):
+    ## the example in the question had the first letter plotted at one 
+    ## therefor all of the answer will be based of off 1-ndexing rather than 0-indexing
+    skewList = [0]
+    currentSkew = 0
+    for i in range(len(DNAsequence)):
+        if DNAsequence[i] == "G":
+            currentSkew += 1
+        elif DNAsequence[i] == "C":
+            currentSkew -= 1
+        skewList.append(currentSkew)
+
+    minVal = min(skewList)
+    minPosition = []
+    for i in range(len(skewList)):
+        if skewList[i] == minVal:
+            minPosition.append(i+1)
+    
+    x = list(range(0, len(DNAsequence)+1))
+    y = skewList
+
+    plt.plot(x,y, color='black', marker='o')
+    plt.xlabel('position')
+    plt.ylabel('skew')
+    plt.show()
+    return (skewList, minPosition)
+
 
 # Question 12: Returns the frequency array for all k-mers in a sequence
 # Uses functions previously defined to obtain values.
@@ -207,36 +257,44 @@ def freqTable(DNAsequence, k):
 def main():
     # Test Functions with the data taken from either the assignment or the corresponding Rosalind Question
 
-    # GCContent = calculateGC("ATGCTTAGGACT")
-    # print("GC Content Percentage: ", GCContent)
+    GCContent = calculateGC("ATGCTTAGGACT")
+    print("GC Content Percentage: ", GCContent)
 
-    # compliment = reverseCompliment("ATGCTTAGGACT")
-    # print("Reverse compliment: ", compliment)
+    compliment = reverseCompliment("ATGCTTAGGACT")
+    print("Reverse compliment: ", compliment)
 
-    # rnaStrand, protein = rnaToProtein("ATGCTTAGGACT")
-    # print("Transcribed RNA Strand: ", rnaStrand)
-    # print("Protein sequence: ", protein)
+    rnaStrand, protein = rnaToProtein("TACTAGAGCATT")
+    print("Transcribed RNA Strand: ", rnaStrand)
+    print("Protein sequence: ", protein)
 
-    # hamD = hammingDistance("ATGCTTAGGACT", "ATGCTTACCACT")
-    # print("Hamming Distance: ", hamD)
+    hamD = hammingDistance("ATGCTTAGGACT", "ATGCTTACCACT")
+    print("Hamming Distance: ", hamD)
 
-    # patternCount = count("ACAACTATGCATACTATCGGGAACTATCCT","ACTAT")
-    # print("Total k-mer pattern: ", patternCount)
+    patternCount = count("ACAACTATGCATACTATCGGGAACTATCCT","ACTAT")
+    print("Total k-mer pattern: ", patternCount)
 
-    # mostFreq = mostFrequentKMer("ACAACTATGCATACTATCGGGAACTATCCT", 3)
-    # print("Most Freq K-Mer with indices: ", mostFreq)
+    mostFreq = mostFrequentKMer("ACAACTATGCATACTATCGGGAACTATCCT", 3)
+    print("Most Freq K-Mer with indices: ", mostFreq)
 
-    # numNeigh = neighbors("ACTAT", 4)
-    # print("Total List of Neighbours: ", numNeigh)
+    numNeigh = neighbors("ACTAT", 4)
+    print("Total List of Neighbours: ", numNeigh)
 
-    # occurrences = approxOccurrence("CGCCCGAATCCAGAACGCATTCCCATATTTCGGGACCACTGGCCTCCACGGTACGGACGTCAATCAAATGCCTAGCGGCTTGTGGTTTCTCCTACGCTCC", "ATTCTGGA", 3)
-    # print("Approximate Occurrence: ", occurrences)
+    occurrences = approxOccurrence("CGCCCGAATCCAGAACGCATTCCCATATTTCGGGACCACTGGCCTCCACGGTACGGACGTCAATCAAATGCCTAGCGGCTTGTGGTTTCTCCTACGCTCC", "ATTCTGGA", 3)
+    print("Approximate Occurrence: ", occurrences)
 
-    # clumpVal = clumps("CGGACTCGACAGATGTGAAGAAATGTGAAGACTGAGTGAAGAGAAGAGGAAACACGACACGACATTGCGACATAATGTACGAATGTAATGTGCCTATGGC", 5, 75, 4)
-    # print("K-Mer Clumps: ", clumpVal)
+    clumpVal = clumps("CGGACTCGACAGATGTGAAGAAATGTGAAGACTGAGTGAAGAGAAGAGGAAACACGACACGACATTGCGACATAATGTACGAATGTAATGTGCCTATGGC", 5, 75, 4)
+    print("K-Mer Clumps: ", clumpVal)
 
-    # frequencyArray = freqTable("ACGCGGCTCTGAAA", 2)
-    # print(frequencyArray)
+    skewArray, minValue = skew("CATGGGCATCGGCCATACGCC")
+    print("Skew Array: ", skewArray)
+    print("Minimum Position: ", minValue)
+
+    shared = sharedPairs(3, "CATGGGCATTTGCCATACGCC", "TTTCAAATC")
+    print("List of pairs shared amongst two sequences: ", shared)
+
+    frequencyArray = freqTable("ACGCGGCTCTGAAA", 2)
+    print("Frequency Table with index and k-mers: ", frequencyArray)
 
 if __name__ == "__main__":
     main()
+
